@@ -16,6 +16,38 @@
 			"required": false,
 			"id": "completed",
 			"order": 1
+		},
+		"creator": {
+			"name": "creator",
+			"type": "string",
+			"typeLabel": "string",
+			"required": false,
+			"id": "creator",
+			"order": 2
+		},
+		"created": {
+			"name": "created",
+			"type": "object",
+			"typeLabel": "object",
+			"required": false,
+			"id": "created",
+			"order": 3
+		},
+		"modifiedBy": {
+			"name": "modifiedBy",
+			"type": "string",
+			"typeLabel": "string",
+			"required": false,
+			"id": "modifiedBy",
+			"order": 4
+		},
+		"lastUpdated": {
+			"name": "lastUpdated",
+			"type": "object",
+			"typeLabel": "object",
+			"required": false,
+			"id": "lastUpdated",
+			"order": 5
 		}
 	}
 }

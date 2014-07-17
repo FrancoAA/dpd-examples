@@ -1,27 +1,36 @@
-var todoApp = angular.module('todoApp', []);
+var todoApp = angular.module('todoApp', ['ui.router']);
 
-todoApp.config(function($routeProvider) {
-  $routeProvider
-        .when('/login', {
-            templateUrl: 'login.html',
-            controller: 'LoginController',
+todoApp.config(function($stateProvider, $urlRouterProvider) {
+    $stateProvider
+        .state('login', {
+            url: '/login',
+            views: {
+                main: {
+                    templateUrl: 'login.html',
+                    controller: 'LoginController'
+                }
+            }
         })
-        .when('/todos', {
-            templateUrl: 'todo-list.html',
-            controller: 'TodoController',
-            requireLogin: true
-        })
-        .otherwise({
-            redirectTo: '/login'
+        .state('todos', {
+            url: '/todos',
+            loginRequired: true,
+            views: {
+                main: {
+                    templateUrl: 'todo-list.html',
+                    controller: 'TodoController'
+                }
+            }
         });
+    
+    $urlRouterProvider.otherwise("/login");
 });
 
-todoApp.run(function($rootScope, $state, $location, UserService) {
-    $rootScope.$on('$stateChangeStart', function(event, next, current) {
-        if (current.requireLogin && !UserService.isAuthenticated()) {
-            $location.path('/login');
+todoApp.run(function($rootScope, $state, UserService) {
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams) {
+        if (toState.loginRequired && !UserService.isAuthenticated()) {
+            event.preventDefault();
+            $state.go('login');
         }
-        
     });
 });
 
@@ -48,7 +57,7 @@ todoApp.service('UserService', function($q, $http) {
             var d = $q.defer();
             _user = undefined;
             
-            $http.post('/users/login')
+            $http.post('/users/logout')
                 .success(function(resp) {
                     console.log(resp);
                     d.resolve();
@@ -85,22 +94,26 @@ todoApp.controller('LoginController', function(UserService, $location, $scope) {
 });
 
 todoApp.controller('TodoController', function($scope, $http, $location, UserService) {
-    /*
-    if (!UserService.isAuthenticated()) {
-        $location.path('/login');
-    }
-    */
+
     $scope.todos = [];
 
-    // Get all todos
-    $http.get('/todos')
-        .success(function(todos) {
-            $scope.loaded = true;
-            $scope.todos = todos;
-        }).error(function(err) {
-            alert(err);
-        });
-
+    dpd.on('todos:changed', function(user) {
+        loadTodoList();
+    });
+    
+    var loadTodoList = function() {
+        // Get all todos
+        $http.get('/todos')
+            .success(function(todos) {
+                $scope.loaded = true;
+                $scope.todos = todos;
+            }).error(function(err) {
+                alert(err);
+            });
+    };
+    
+    loadTodoList();
+    
     $scope.logout = function() {
         console.log("Logout");
         UserService.logout().then(
@@ -118,7 +131,6 @@ todoApp.controller('TodoController', function($scope, $http, $location, UserServ
             title: title
         }).success(function(todo) {
             $scope.newTodoTitle = '';
-            $scope.todos.push(todo);
         }).error(function(err) {
             // Alert if there's an error
             return alert(err.message || "an error occurred");
@@ -150,15 +162,7 @@ todoApp.controller('TodoController', function($scope, $http, $location, UserServ
                 completed: true
             }
         }).success(function() {
-            // Find the index of an object with a matching id
-            var index = $scope.todos.indexOf(
-                $scope.todos.filter(function(t) {
-                return t.id === todo.id;
-            })[0]);
-
-            if (index !== -1) {
-                $scope.todos.splice(index, 1);
-            }
+            console.log('deleteTodo: ' + todo.id);
         }).error(function(err) {
             alert(err.message || "an error occurred");
         });

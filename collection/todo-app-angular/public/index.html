@@ -2,52 +2,60 @@
 <html ng-app="todoApp">
 <head>
 	<title>Deployd Todos</title>
-  <link rel="stylesheet" href="css/bootstrap.min.css" />
-  <!-- Angular does some things with CSS so it's good to load this in the head -->
-  <script type="text/javascript" src="/js/lib/angular.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <!-- Angular does some things with CSS so it's good to load this in the head -->
+    <script type="text/javascript" src="/js/lib/angular.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.min.js"></script>
+    <style>
+        body {
+            padding-top: 20px;
+        }
+    </style>
 </head>
 <body>
 
-    <div ng-view></div>
+    <div ui-view="main"></div>
     
     <script type="text/javascript" src="/js/lib/jquery.js"></script>
     <script type="text/javascript" src="/dpd.js"></script>
     <script type="text/javascript" src="/js/todo.js"></script>
-  
+    
     <script type="text/ng-template" id="login.html">
-    <div class="container">
-        <form class="form-horizontal">
-            <div class="control-group">
-                <label class="control-label" for="inputEmail">Email</label>
-                <div class="controls">
-                    <input type="text" id="inputEmail" placeholder="Email" ng-model="user.username">
+        <div class="container-fluid">
+            <form class="form-horizontal">
+                <div class="control-group">
+                    <label class="control-label" for="inputEmail">Email</label>
+                    <div class="controls">
+                        <input type="text" id="inputEmail" placeholder="Email" ng-model="user.username">
+                    </div>
                 </div>
-            </div>
-            <div class="control-group">
-                <label class="control-label" for="inputPassword">Password</label>
-                <div class="controls">
-                    <input type="password" id="inputPassword" placeholder="Password" ng-model="user.password">
+                <div class="control-group">
+                    <label class="control-label" for="inputPassword">Password</label>
+                    <div class="controls">
+                        <input type="password" id="inputPassword" placeholder="Password" ng-model="user.password">
+                    </div>
                 </div>
-            </div>
-            <div class="control-group">
-                </div class="controls">
-                    <button class="btn" ng-click="login(user)">Sign in</button>                    
+                <div class="control-group">
+                    <div class="controls">
+                        <button class="btn" ng-click="login(user)">Sign in</button>                    
+                    </div>
                 </div>
-            </div>
-        </form>	
-    </div>
+            </form>	
+        </div>
     </script>
   
     <script type="text/ng-template" id="todo-list.html">
-        <div class="container" ng-cloak>
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button class="btn btn-danger" ng-click="logout()">Logout</button>
+            </div>
             <h1>Deployd Todos</h1>
-            <button class="btn btn-danger" ng-click="logout()">Logout</button>
             <p id="empty" ng-hide="todos.length || !loaded">You don't have any todos! Add one now:</p>
             <ul id="todos" class="unstyled">
                 <li ng-repeat="todo in todos">
                     <label class="checkbox">
                         <input type="checkbox" ng-model="todo.completed" ng-change="changeCompleted(todo)" />
-                        {{todo.title}}
+                        {{todo.title}} (creado por {{todo.ownerName}})
                     </label>
                 </li>
             </ul>
